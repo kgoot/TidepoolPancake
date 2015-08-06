@@ -1,12 +1,10 @@
-# Initial commit by Ethan Look
-
 import base64
 import requests
 import uuid
 import ast
 
 def make_login_request(username, password):
-    base64_login_string = base64.b64encode(b'karina@tidepool.org:Cokacola123')
+    base64_login_string = base64.b64encode(b'ethan+urchin@tidepool.org:urchinluvr')
     url = 'https://devel-api.tidepool.io/auth/login'
     headers = {'Authorization': "Basic " + str(base64_login_string)[2:-1]}
     r = requests.post(url, headers=headers)
@@ -19,23 +17,23 @@ def make_note_request(session_token, user_id, note_text):
     """ session_token goes in header and is required for every note request
         user_id goes in the end of the url
         note goes in the body
-    """
-   # formated_note = format_note(user_id, note_text)
-    
-    #body = {"message": formated_note}
-    headers = {'x-tidepool-session-token': session_token}
+    """    
+    headers = {
+        'x-tidepool-session-token': session_token,
+        'Content-Type':'application/json'
+    }
     url = 'https://devel-api.tidepool.io/message/send/' + user_id
     body = {
-        'guid': 'abcde',
-        'parentmessage' : 'null', #None,
-        'userid': user_id,
-        'groupid': user_id,
-        'timestamp': '2013-11-28T23:07:40+00:00',
-        'createdtime': '2013-11-28T23:07:40+00:00',
-        'messagetext': 'In three words I can sum up everything I have learned about life: it goes on.'
+        'message': {
+            'guid': 'abcde',
+            'parentmessage' : None,
+            'userid': user_id,
+            'groupid': user_id,
+            'timestamp': '2013-11-28T23:07:40+00:00',
+            'messagetext': 'In three words I can sum up everything I have learned about life: it goes on.'
         }
+    }
     r = requests.post(url, headers=headers, data=body)
-    print(r.headers)
     print(r)
     print(r.text)
 
