@@ -56,24 +56,20 @@ def format_note(user_id, note_text):
     note["messagetext"] = str(note_text)
     return note
 
-session_token, user_id = make_login_request('karina@tidepool.org', 'Cokacola123')
-note_text = {"activity_name": "Walking",
-            "distance": {
-              "value": 1668.16991784243,
-              "unit": "m"
-            },
-            "effective_time_frame": {
-                "time_interval": {
-                    "start_date_time": "2015-08-04T15:58:21.000-07:00",
-                    "duration": {
-                        "value": 1179.089,
-                        "unit": "sec"
-                        }
-                    }
-                }
-            }
+def main():
+    with open('test.json') as data_file:    
+        data = json.load(data_file)
 
-post_note(session_token, user_id, note_text)
+    #change username and password here for a different user
+    session_token, user_id = make_login_request('karina@tidepool.org', 'Cokacola123')
+
+    physical_activity = data['body']['physical_activity']
+
+    for note in physical_activity:
+        post_note(session_token, user_id, note)
+
+if __name__ == '__main__':
+    main()
 
 
 
