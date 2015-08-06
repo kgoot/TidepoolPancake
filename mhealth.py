@@ -21,7 +21,7 @@ def make_login_request(username, password):
     return session_token, user_id
 
 def post_note(session_token, user_id, note_text):
-    """ Post a note to a specific user's devel API.
+    """ Post a note to a specific user's devel message API.
         session_token -- required by message API header
         user_id -- attached to the end of the url during each request
         note_text -- the body of the note
@@ -57,12 +57,14 @@ def format_note(user_id, note_text):
     return note
 
 def main():
-    with open('test.json') as data_file:    
+    #replace file_name with desired .json file
+    with open('file_name.json') as data_file:    
         data = json.load(data_file)
 
     #change username and password here for a different user
-    session_token, user_id = make_login_request('karina@tidepool.org', 'Cokacola123')
+    session_token, user_id = make_login_request('testUser@tidepool.org', 'passwordPlaceHolder')
 
+    #format specific for runkeeper, may need to be changed for other API's
     physical_activity = data['body']['physical_activity']
 
     for note in physical_activity:
@@ -70,6 +72,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
