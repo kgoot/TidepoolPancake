@@ -1,3 +1,5 @@
+# Initial commit by Ethan Look
+
 import base64
 import requests
 import uuid
