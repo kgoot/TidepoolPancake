@@ -3,9 +3,15 @@ import requests
 import uuid
 import ast
 import json
+import sys
 
 def make_login_request(username, password):
-    base64_login_string = base64.b64encode(b'ethan+urchin@tidepool.org:urchinluvr')
+    """ Generate a post request to tidepool's login authentication API for a
+        given username and password
+        Return a session_token and user_id to use for note creation
+    """
+    login_in_bytes = str.encode("{:s}:{:s}".format(username, password)) 
+    base64_login_string = base64.b64encode(login_in_bytes)
     url = 'https://devel-api.tidepool.io/auth/login'
     headers = {'Authorization': "Basic " + str(base64_login_string)[2:-1]}
     r = requests.post(url, headers=headers)
@@ -14,33 +20,35 @@ def make_login_request(username, password):
     user_id = text_to_object['userid']
     return session_token, user_id
 
-def make_note_request(session_token, user_id, note_text):
-    """ session_token goes in header and is required for every note request
-        user_id goes in the end of the url
-        note goes in the body
+def post_note(session_token, user_id, note_text):
+    """ Post a note to a specific user's devel API.
+        session_token -- required by message API header
+        user_id -- attached to the end of the url during each request
+        note_text -- the body of the note
     """    
     headers = {
         'x-tidepool-session-token': session_token,
         'Content-Type':'application/json'
     }
+    formated_note = format_note(user_id, note_text)    
+    body = {'message': formated_note}
+    
     url = 'https://devel-api.tidepool.io/message/send/' + user_id
-    body = {
-        'message': {
-            'guid': str(uuid.uuid4()),
-            'userid': str(user_id),
-            'groupid': str(user_id),
-            'parentmessage' : None,
-            'timestamp': '2015-06-02T17:18:37.000Z',
-            'messagetext': 'In three words I can sum up everything I have learned about life: it goes on.'
-        }
-    }
-    r = requests.post(url, headers=headers, data=json.dumps(body))
+    
+    try:
+        r = requests.post(url, headers=headers, data=json.dumps(body))
+        str(r) == '<Response [201]>'
+    except:
+        print(r.text)
+        sys.exit(1) 
 
 def format_note(user_id, note_text):
+    """ Format each note with required fields to post a request
+    """
     note = {}
     note["guid"] = str(uuid.uuid4())
-    note["userid"] = user_id
-    note["groupid"] = user_id
+    note["userid"] = str(user_id)
+    note["groupid"] = str(user_id)
     note["parentmessage"] = None,
     time_from_note = note_text["effective_time_frame"]["time_interval"]["start_date_time"]
     formated_time = time_from_note[:19] + '-' + time_from_note[24:]
@@ -56,7 +64,7 @@ note_text = {"activity_name": "Walking",
             },
             "effective_time_frame": {
                 "time_interval": {
-                    "start_date_time": "2015-08-02T15:58:21.000-07:00",
+                    "start_date_time": "2015-08-04T15:58:21.000-07:00",
                     "duration": {
                         "value": 1179.089,
                         "unit": "sec"
@@ -65,7 +73,7 @@ note_text = {"activity_name": "Walking",
                 }
             }
 
-make_note_request(session_token, user_id, note_text)
+post_note(session_token, user_id, note_text)
 
 
 
