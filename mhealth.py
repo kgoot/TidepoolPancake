@@ -2,6 +2,7 @@ import base64
 import requests
 import uuid
 import ast
+import json
 
 def make_login_request(username, password):
     base64_login_string = base64.b64encode(b'ethan+urchin@tidepool.org:urchinluvr')
@@ -25,17 +26,15 @@ def make_note_request(session_token, user_id, note_text):
     url = 'https://devel-api.tidepool.io/message/send/' + user_id
     body = {
         'message': {
-            'guid': 'abcde',
+            'guid': str(uuid.uuid4()),
+            'userid': str(user_id),
+            'groupid': str(user_id),
             'parentmessage' : None,
-            'userid': user_id,
-            'groupid': user_id,
-            'timestamp': '2013-11-28T23:07:40+00:00',
+            'timestamp': '2015-06-02T17:18:37.000Z',
             'messagetext': 'In three words I can sum up everything I have learned about life: it goes on.'
         }
     }
-    r = requests.post(url, headers=headers, data=body)
-    print(r)
-    print(r.text)
+    r = requests.post(url, headers=headers, data=json.dumps(body))
 
 def format_note(user_id, note_text):
     note = {}
