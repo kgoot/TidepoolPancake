@@ -4,6 +4,7 @@ import uuid
 import ast
 import json
 import sys
+import getpass
 
 def make_login_request(username, password):
     """ Generate a post request to tidepool's login authentication API for a
@@ -58,11 +59,11 @@ def format_note(user_id, note_text):
 
 def main():
     #replace file_name with desired .json file
-    with open('file_name.json') as data_file:    
+    with open('fitness-data.json') as data_file:    
         data = json.load(data_file)
 
     #change username and password here for a different user
-    session_token, user_id = make_login_request('testUser@tidepool.org', 'passwordPlaceHolder')
+    session_token, user_id = make_login_request(input("Email: "), getpass.getpass())
 
     #format specific for runkeeper, may need to be changed for other API's
     physical_activity = data['body']['physical_activity']
